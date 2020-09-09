@@ -1,0 +1,27 @@
+---
+- name: disable anacron
+  become: yes
+  copy:
+    src: crontab
+    dest: /etc/crontab
+    owner: root
+    group: root
+    mode: 0644
+
+- name: disable apport
+  become: yes
+  copy:
+    src: apport
+    dest: /etc/default/apport
+    owner: root
+    group: root
+    mode: 0644
+
+- name: disable bluetooth
+  become: yes
+  copy:
+    src: rc.local
+    dest: /etc/rc.local
+    owner: root
+    group: root
+    mode: 0751

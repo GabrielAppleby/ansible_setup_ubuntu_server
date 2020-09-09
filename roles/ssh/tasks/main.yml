@@ -1,0 +1,20 @@
+---
+- name: Disable empty password login
+  become: yes
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^#?PermitEmptyPasswords" line="PermitEmptyPasswords no"
+  notify: restart sshd
+
+- name: Disable remote root login
+  become: yes
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^#?PermitRootLogin" line="PermitRootLogin no"
+  notify: restart sshd
+
+- name: Disable password login
+  become: yes
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^(#\s*)?PasswordAuthentication " line="PasswordAuthentication no"
+  notify: restart sshd
+
+- name: Disable x11 forwarding
+  become: yes
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^(#\s*)?X11Forwarding " line="X11Forwarding no"
+  notify: restart sshd

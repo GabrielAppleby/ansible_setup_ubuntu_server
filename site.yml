@@ -1,0 +1,11 @@
+---
+- name: Provisions a web server
+  hosts: all
+  remote_user: trent_lane
+
+  roles:
+    - packages
+    - users
+    - ssh
+    - services
+    - misc

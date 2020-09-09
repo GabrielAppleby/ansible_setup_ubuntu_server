@@ -1,0 +1,6 @@
+---
+- name: Lock root
+  become: yes
+  user:
+    name: root
+    password_lock: yes

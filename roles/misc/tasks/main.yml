@@ -1,0 +1,61 @@
+- name: Checking if compilers exist
+  stat:
+    path: "{{ item }}"
+  with_items:
+     - /usr/bin/byacc
+     - /usr/bin/yacc
+     - /usr/bin/bcc
+     - /usr/bin/kgcc
+     - /usr/bin/cc
+     - /usr/bin/gcc
+     - /usr/bin/*c++
+     - /usr/bin/*g++
+  register: compiler_files
+
+
+- name: Disable compilers
+  become: yes
+  file:
+    path: "{{ item.item }}"
+    owner: root
+    group: root
+    mode: '0000'
+  with_items: "{{ compiler_files.results }}"
+  when: item.stat.exists
+
+- name: create limits.d-directory if it does not exist
+  file:
+    path: '/etc/security/limits.d'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    state: 'directory'
+
+- name: create additional limits config file
+  become: yes
+  pam_limits:
+    dest: '/etc/security/limits.d/10.hardcore.conf'
+    domain: '*'
+    limit_type: hard
+    limit_item: core
+    value: '0'
+    comment: Prevent core dumps for all users. These are usually not needed and may contain sensitive information
+
+- name: set 10.hardcore.conf perms to 0400 and root ownership
+  become: yes
+  file:
+    path: /etc/security/limits.d/10.hardcore.conf
+    owner: 'root'
+    group: 'root'
+    mode: '0440'
+
+- name: Change various sysctl-settings, look at the sysctl-vars file for documentation
+  become: yes
+  sysctl:
+    name: '{{ item.key }}'
+    value: '{{ item.value }}'
+    sysctl_set: true
+    state: present
+    reload: true
+    ignoreerrors: true
+  with_dict: '{{ sysctl_config }}'
